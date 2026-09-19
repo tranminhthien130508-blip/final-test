@@ -5,7 +5,6 @@
     <title>Game Xếp Hình (Tối ưu Tailwind)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
-        // Cấu hình thêm màu bg-black-100 bắt buộc theo đề bài
         tailwind.config = {
             theme: { extend: { colors: { black: { 100: '#1a1a1a' } } } }
         }
@@ -15,7 +14,6 @@
 
     <div class="bg-white p-6 rounded-xl shadow-lg flex gap-8 w-[800px]">
         
-        <!-- CỘT TRÁI: GAME -->
         <div class="flex-1">
             <h1 class="text-3xl font-bold mb-4 text-gray-800">Sliding Puzzle</h1>
             
@@ -24,7 +22,6 @@
                 <button id="nut-bat-dau" onclick="xuLyNutBatDau()" class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded font-bold transition">Bắt đầu</button>
             </div>
 
-            <!-- Bàn cờ -->
             <div id="khung-ban-co" class="grid grid-cols-4 gap-2 bg-gray-300 p-2 rounded w-80 h-80"></div>
 
             <div class="mt-4 bg-blue-50 text-blue-800 p-3 rounded text-sm">
@@ -32,7 +29,6 @@
             </div>
         </div>
 
-        <!-- CỘT PHẢI: LỊCH SỬ -->
         <div class="flex-1 border-l pl-6">
             <h2 class="text-xl font-bold mb-4 text-gray-800">Lịch sử lượt chơi</h2>
             <table class="w-full text-left border-collapse">
@@ -50,7 +46,6 @@
     </div>
 
     <script>
-        // 1. DỮ LIỆU CƠ BẢN
         const danhSachMau = [
             "bg-green-100 text-green-500", "bg-red-100 text-red-500", "bg-blue-100 text-blue-500",
             "bg-purple-100 text-purple-500", "bg-pink-100 text-pink-500", "bg-yellow-100 text-yellow-500",
@@ -61,7 +56,6 @@
         let mangDuLieu = [], hangOTrong = 3, cotOTrong = 3;
         let dangChoi = false, thoiGian = 0, boDemGio, lanChoi = 0;
 
-        // Lưu sẵn các thẻ HTML để code ngắn hơn
         const UI = {
             banCo: document.getElementById("khung-ban-co"),
             dongHo: document.getElementById("dong-ho"),
@@ -69,7 +63,6 @@
             lichSu: document.getElementById("bang-lich-su")
         };
 
-        // 2. KHỞI TẠO & VẼ BÀN CỜ (Đã rút gọn dùng chuỗi HTML)
         function khoiTaoMang() {
             mangDuLieu = [[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12], [13, 14, 15, 0]];
             hangOTrong = 3; cotOTrong = 3;
@@ -81,14 +74,12 @@
                 for (let c = 0; c < 4; c++) {
                     let so = mangDuLieu[h][c];
                     let classMau = so === 0 ? "bg-gray-900" : danhSachMau[(so - 1) % 12];
-                    // Tận dụng Tailwind ghép thẳng vào HTML
                     html += `<div class="flex items-center justify-center text-2xl font-bold rounded select-none ${classMau}">${so || ""}</div>`;
                 }
             }
             UI.banCo.innerHTML = html;
         }
 
-        // 3. XỬ LÝ NÚT BẮT ĐẦU
         function xuLyNutBatDau() {
             if (!dangChoi) {
                 dangChoi = true;
@@ -104,7 +95,6 @@
                     UI.dongHo.innerText = String(Math.floor(thoiGian / 60)).padStart(2, '0') + ":" + String(thoiGian % 60).padStart(2, '0');
                 }, 1000);
 
-                // Trộn bảng 100 lần
                 khoiTaoMang();
                 for (let i = 0; i < 100; i++) diChuyenTrangThai(Math.floor(Math.random() * 4));
                 veBanCo();
@@ -113,9 +103,7 @@
             }
         }
 
-        // 4. LOGIC DI CHUYỂN DÙNG CHUNG (Cho cả Trộn và Bấm phím)
         function diChuyenTrangThai(huong, veLai = false) {
-            // huong: 0=Lên, 1=Xuống, 2=Trái, 3=Phải
             let hMoi = hangOTrong + (huong === 0 ? -1 : huong === 1 ? 1 : 0);
             let cMoi = cotOTrong + (huong === 2 ? -1 : huong === 3 ? 1 : 0);
 
@@ -131,19 +119,14 @@
             }
         }
 
-        // 5. BẮT SỰ KIỆN BÀN PHÍM
-        // Bắt sự kiện bàn phím
 window.addEventListener("keydown", function(e) {
-    // Chặn trang web tự cuộn khi bấm phím mũi tên
     let keys = ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", " "];
     if (keys.indexOf(e.key) > -1) {
         e.preventDefault();
     }
 
-    // Chưa bấm Bắt đầu thì không cho bấm phím
     if (dangChoi == false) return;
 
-    // 0: Lên, 1: Xuống, 2: Trái, 3: Phải
     if (e.key == "w" || e.key == "ArrowUp") {
         diChuyenTrangThai(0, true);
     } else if (e.key == "s" || e.key == "ArrowDown") {
@@ -155,26 +138,23 @@ window.addEventListener("keydown", function(e) {
     }
 });
 
-// Hàm check xem xếp đúng thứ tự chưa
 function kiemTraThang() {
     let dem = 1;
     let win = true;
 
-    // Dùng i, j cho quen thuộc
     for (let i = 0; i < 4; i++) {
         for (let j = 0; j < 4; j++) {
             
-            // Xử lý riêng ô cuối cùng góc phải
             if (i == 3 && j == 3) {
                 if (mangDuLieu[i][j] != 0) {
-                    win = false; // Ô cuối không phải số 0 là chưa win
+                    win = false; 
                 }
             } else {
-                // Kiểm tra các ô còn lại xem có đúng số đếm 1, 2, 3... không
+
                 if (mangDuLieu[i][j] != dem) {
                     win = false;
                 }
-                dem++; // Tăng số lên 1
+                dem++; 
             }
         }
     }
@@ -187,16 +167,13 @@ function kiemTraThang() {
     }
 }
 
-// Lưu lịch sử khi hết game
 function ketThucGame(ketQua) {
     dangChoi = false;
     clearInterval(boDemGio); 
     
-    // Reset lại nút Bắt đầu
     UI.nutBatDau.innerText = "Bắt đầu";
     UI.nutBatDau.className = "bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded font-bold transition";
 
-    // Set màu chữ theo kết quả
     let colorClass = "";
     if (ketQua == "Hoàn thành") {
         colorClass = "text-green-600 font-bold";
@@ -206,18 +183,15 @@ function ketThucGame(ketQua) {
 
     lanChoi++;
     
-    // Nối chuỗi tạo thẻ tr để in ra bảng (viết kiểu += cho gọn)
     let tr = "<tr class='border-b'>";
     tr += "<td class='border p-2'>" + lanChoi + "</td>";
     tr += "<td class='border p-2'>" + UI.dongHo.innerText + "</td>";
     tr += "<td class='border p-2 " + colorClass + "'>" + ketQua + "</td>";
     tr += "</tr>";
 
-    // Chèn dữ liệu mới lên trên đầu bảng
     UI.lichSu.innerHTML = tr + UI.lichSu.innerHTML;
 }
 
-// Chạy khởi tạo lúc mới load web
 khoiTaoMang();
 veBanCo();
     </script>
